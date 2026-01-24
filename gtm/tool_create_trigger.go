@@ -45,6 +45,11 @@ func registerCreateTrigger(server *mcp.Server) {
 			return nil, CreateTriggerOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, CreateTriggerOutput{}, err
+		}
+
 		// Parse filter JSON if provided
 		var filter []Condition
 		if input.FilterJSON != "" {

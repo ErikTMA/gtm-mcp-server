@@ -52,6 +52,11 @@ func registerUpdateTrigger(server *mcp.Server) {
 			return nil, UpdateTriggerOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, UpdateTriggerOutput{}, err
+		}
+
 		path := BuildTriggerPath(input.AccountID, input.ContainerID, input.WorkspaceID, input.TriggerID)
 
 		// Parse filter JSON if provided

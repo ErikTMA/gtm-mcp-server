@@ -20,6 +20,11 @@ func registerListContainers(server *mcp.Server) {
 			return nil, ListContainersOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccountAccess(input.AccountID); err != nil {
+			return nil, ListContainersOutput{}, err
+		}
+
 		containers, err := client.ListContainers(ctx, input.AccountID)
 		if err != nil {
 			return nil, ListContainersOutput{}, err

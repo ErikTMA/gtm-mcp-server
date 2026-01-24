@@ -52,6 +52,11 @@ func registerUpdateTag(server *mcp.Server) {
 			return nil, UpdateTagOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, UpdateTagOutput{}, err
+		}
+
 		path := BuildTagPath(input.AccountID, input.ContainerID, input.WorkspaceID, input.TagID)
 
 		// Parse parameters JSON if provided

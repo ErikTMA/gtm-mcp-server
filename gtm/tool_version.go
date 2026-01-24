@@ -50,6 +50,11 @@ func registerCreateVersion(server *mcp.Server) {
 			return nil, CreateVersionOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, CreateVersionOutput{}, err
+		}
+
 		// Check workspace status first
 		status, err := client.GetWorkspaceStatus(ctx, input.AccountID, input.ContainerID, input.WorkspaceID)
 		if err != nil {
@@ -110,6 +115,11 @@ func registerPublishVersion(server *mcp.Server) {
 
 		client, err := getClient(ctx)
 		if err != nil {
+			return nil, PublishVersionOutput{}, err
+		}
+
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
 			return nil, PublishVersionOutput{}, err
 		}
 

@@ -17,6 +17,7 @@ type Container struct {
 }
 
 // ListContainers returns all containers in an account.
+// If container restriction is enabled (via GTM_CONTAINER_IDS), only the allowed containers are returned.
 func (c *Client) ListContainers(ctx context.Context, accountID string) ([]Container, error) {
 	parent := fmt.Sprintf("accounts/%s", accountID)
 
@@ -25,7 +26,20 @@ func (c *Client) ListContainers(ctx context.Context, accountID string) ([]Contai
 		return nil, err
 	}
 
-	return toContainers(resp.Container), nil
+	containers := toContainers(resp.Container)
+
+	// Filter to restricted containers if configured
+	if len(c.RestrictedContainerIDs) > 0 {
+		filtered := make([]Container, 0)
+		for _, container := range containers {
+			if c.RestrictedContainerIDs[container.ContainerID] {
+				filtered = append(filtered, container)
+			}
+		}
+		return filtered, nil
+	}
+
+	return containers, nil
 }
 
 func toContainers(containers []*tagmanager.Container) []Container {

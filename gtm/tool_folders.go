@@ -38,6 +38,11 @@ func registerListFolders(server *mcp.Server) {
 			return nil, ListFoldersOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, ListFoldersOutput{}, err
+		}
+
 		folders, err := client.ListFolders(ctx, input.AccountID, input.ContainerID, input.WorkspaceID)
 		if err != nil {
 			return nil, ListFoldersOutput{}, err
@@ -56,6 +61,11 @@ func registerGetFolderEntities(server *mcp.Server) {
 	handler := func(ctx context.Context, req *mcp.CallToolRequest, input GetFolderEntitiesInput) (*mcp.CallToolResult, GetFolderEntitiesOutput, error) {
 		client, err := getClient(ctx)
 		if err != nil {
+			return nil, GetFolderEntitiesOutput{}, err
+		}
+
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
 			return nil, GetFolderEntitiesOutput{}, err
 		}
 

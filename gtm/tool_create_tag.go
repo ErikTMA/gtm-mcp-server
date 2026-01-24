@@ -45,6 +45,11 @@ func registerCreateTag(server *mcp.Server) {
 			return nil, CreateTagOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, CreateTagOutput{}, err
+		}
+
 		// Parse parameters JSON if provided
 		var params []Parameter
 		if input.ParametersJSON != "" {

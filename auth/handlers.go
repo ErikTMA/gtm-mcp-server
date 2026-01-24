@@ -19,6 +19,7 @@ type Server struct {
 	store          TokenStore
 	logger         *slog.Logger
 	accessTokenTTL time.Duration
+	saveTokenPath  string // If set, saves Google token to this file after auth
 }
 
 // NewServer creates a new OAuth server.
@@ -30,6 +31,11 @@ func NewServer(baseURL string, google *GoogleProvider, store TokenStore, logger 
 		logger:         logger,
 		accessTokenTTL: 1 * time.Hour,
 	}
+}
+
+// SetSaveTokenPath configures the server to save the Google OAuth token to a file after successful auth.
+func (s *Server) SetSaveTokenPath(path string) {
+	s.saveTokenPath = path
 }
 
 // AuthorizeHandler handles GET /authorize - redirects to Google OAuth.
@@ -180,6 +186,16 @@ func (s *Server) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("failed to exchange code with Google", "error", err)
 		s.errorResponse(w, "server_error", "Failed to exchange authorization code")
 		return
+	}
+
+	// Save token to file if configured (for stdio mode setup)
+	if s.saveTokenPath != "" {
+		if err := SaveTokenToFile(s.saveTokenPath, googleToken); err != nil {
+			s.logger.Error("failed to save token to file", "error", err, "path", s.saveTokenPath)
+			// Don't fail the auth flow, just log the error
+		} else {
+			s.logger.Info("saved Google token to file", "path", s.saveTokenPath)
+		}
 	}
 
 	// Generate our own authorization code to return to Claude

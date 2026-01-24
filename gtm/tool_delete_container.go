@@ -40,6 +40,11 @@ func registerDeleteContainer(server *mcp.Server) {
 			return nil, DeleteContainerOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccountAccess(input.AccountID); err != nil {
+			return nil, DeleteContainerOutput{}, err
+		}
+
 		path := BuildContainerPath(input.AccountID, input.ContainerID)
 
 		if err := client.DeleteContainer(ctx, path); err != nil {

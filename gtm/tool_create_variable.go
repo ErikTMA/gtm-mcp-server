@@ -42,6 +42,11 @@ func registerCreateVariable(server *mcp.Server) {
 			return nil, CreateVariableOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, CreateVariableOutput{}, err
+		}
+
 		// Parse parameters JSON if provided
 		var params []Parameter
 		if input.ParametersJSON != "" {

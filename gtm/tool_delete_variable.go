@@ -47,6 +47,11 @@ func registerDeleteVariable(server *mcp.Server) {
 			return nil, DeleteVariableOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, DeleteVariableOutput{}, err
+		}
+
 		path := BuildVariablePath(input.AccountID, input.ContainerID, input.WorkspaceID, input.VariableID)
 
 		if err := client.DeleteVariable(ctx, path); err != nil {

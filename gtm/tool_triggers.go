@@ -22,6 +22,11 @@ func registerListTriggers(server *mcp.Server) {
 			return nil, ListTriggersOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, ListTriggersOutput{}, err
+		}
+
 		triggers, err := client.ListTriggers(ctx, input.AccountID, input.ContainerID, input.WorkspaceID)
 		if err != nil {
 			return nil, ListTriggersOutput{}, err

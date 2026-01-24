@@ -50,6 +50,11 @@ func registerCreateWorkspace(server *mcp.Server) {
 			return nil, CreateWorkspaceOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, CreateWorkspaceOutput{}, err
+		}
+
 		parent := fmt.Sprintf("accounts/%s/containers/%s", input.AccountID, input.ContainerID)
 		workspace := &tagmanager.Workspace{
 			Name:        input.Name,

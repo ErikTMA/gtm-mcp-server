@@ -21,6 +21,11 @@ func registerListWorkspaces(server *mcp.Server) {
 			return nil, ListWorkspacesOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, ListWorkspacesOutput{}, err
+		}
+
 		workspaces, err := client.ListWorkspaces(ctx, input.AccountID, input.ContainerID)
 		if err != nil {
 			return nil, ListWorkspacesOutput{}, err

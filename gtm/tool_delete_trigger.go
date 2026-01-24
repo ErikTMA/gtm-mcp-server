@@ -47,6 +47,11 @@ func registerDeleteTrigger(server *mcp.Server) {
 			return nil, DeleteTriggerOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, DeleteTriggerOutput{}, err
+		}
+
 		path := BuildTriggerPath(input.AccountID, input.ContainerID, input.WorkspaceID, input.TriggerID)
 
 		if err := client.DeleteTrigger(ctx, path); err != nil {

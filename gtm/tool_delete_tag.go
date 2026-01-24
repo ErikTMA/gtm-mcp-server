@@ -47,6 +47,11 @@ func registerDeleteTag(server *mcp.Server) {
 			return nil, DeleteTagOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, DeleteTagOutput{}, err
+		}
+
 		path := BuildTagPath(input.AccountID, input.ContainerID, input.WorkspaceID, input.TagID)
 
 		if err := client.DeleteTag(ctx, path); err != nil {

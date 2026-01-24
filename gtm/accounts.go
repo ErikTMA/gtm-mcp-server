@@ -14,13 +14,28 @@ type Account struct {
 }
 
 // ListAccounts returns all GTM accounts accessible to the authenticated user.
+// If account restriction is enabled (via GTM_ACCOUNT_ID), only the restricted account is returned.
 func (c *Client) ListAccounts(ctx context.Context) ([]Account, error) {
 	resp, err := c.Service.Accounts.List().Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
 
-	return toAccounts(resp.Account), nil
+	accounts := toAccounts(resp.Account)
+
+	// Filter to restricted account if configured
+	if c.RestrictedAccountID != "" {
+		filtered := make([]Account, 0, 1)
+		for _, a := range accounts {
+			if a.AccountID == c.RestrictedAccountID {
+				filtered = append(filtered, a)
+				break
+			}
+		}
+		return filtered, nil
+	}
+
+	return accounts, nil
 }
 
 func toAccounts(accounts []*tagmanager.Account) []Account {

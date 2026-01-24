@@ -63,6 +63,11 @@ func registerCreateContainer(server *mcp.Server) {
 			return nil, CreateContainerOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccountAccess(input.AccountID); err != nil {
+			return nil, CreateContainerOutput{}, err
+		}
+
 		parent := fmt.Sprintf("accounts/%s", input.AccountID)
 		container := &tagmanager.Container{
 			Name:         input.Name,

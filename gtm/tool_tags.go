@@ -32,6 +32,11 @@ func registerListTags(server *mcp.Server) {
 			return nil, ListTagsOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, ListTagsOutput{}, err
+		}
+
 		tags, err := client.ListTags(ctx, input.AccountID, input.ContainerID, input.WorkspaceID)
 		if err != nil {
 			return nil, ListTagsOutput{}, err
@@ -50,6 +55,11 @@ func registerGetTag(server *mcp.Server) {
 	handler := func(ctx context.Context, req *mcp.CallToolRequest, input GetTagInput) (*mcp.CallToolResult, GetTagOutput, error) {
 		client, err := getClient(ctx)
 		if err != nil {
+			return nil, GetTagOutput{}, err
+		}
+
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
 			return nil, GetTagOutput{}, err
 		}
 

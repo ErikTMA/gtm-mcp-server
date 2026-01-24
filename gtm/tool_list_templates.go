@@ -53,6 +53,11 @@ func registerListTemplates(server *mcp.Server) {
 			return nil, ListTemplatesOutput{}, err
 		}
 
+		// Validate account access
+		if err := client.ValidateAccess(input.AccountID, input.ContainerID); err != nil {
+			return nil, ListTemplatesOutput{}, err
+		}
+
 		parent := fmt.Sprintf("accounts/%s/containers/%s/workspaces/%s", input.AccountID, input.ContainerID, input.WorkspaceID)
 		resp, err := client.Service.Accounts.Containers.Workspaces.Templates.List(parent).Context(ctx).Do()
 		if err != nil {
