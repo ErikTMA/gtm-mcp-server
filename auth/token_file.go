@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -70,6 +71,13 @@ func SaveTokenToFile(path string, token *oauth2.Token) error {
 	data, err := json.MarshalIndent(tokenFile, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal token: %w", err)
+	}
+
+	// Ensure parent directory exists
+	if dir := filepath.Dir(path); dir != "" {
+		if err := os.MkdirAll(dir, 0700); err != nil {
+			return fmt.Errorf("failed to create token directory: %w", err)
+		}
 	}
 
 	if err := os.WriteFile(path, data, 0600); err != nil {
